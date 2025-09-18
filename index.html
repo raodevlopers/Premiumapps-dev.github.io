@@ -3,177 +3,345 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sony LIV Mod APK v9.4.2 - Download Latest Version</title>
-    
-    <!-- Tailwind CSS -->
+    <title>IITM BS HUB - Dashboard</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <!-- Google Fonts: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Alpine.js for UI interactivity -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
-    <!-- Custom CSS for Animations and Glow Effects -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8;
         }
-
-        /* Custom animation keyframes */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e5e7eb;
         }
-
-        @keyframes glow {
-            0%, 100% {
-                box-shadow: 0 0 8px rgba(76, 201, 240, 0.6), 0 0 16px rgba(76, 201, 240, 0.5), 0 0 24px rgba(118, 75, 162, 0.4);
-            }
-            50% {
-                box-shadow: 0 0 16px rgba(76, 201, 240, 0.8), 0 0 32px rgba(76, 201, 240, 0.7), 0 0 48px rgba(118, 75, 162, 0.6);
-            }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(0, 59, 92, 0.1);
         }
-
-        /* Classes to apply animations */
-        .fade-in {
-            animation: fadeIn 0.8s ease-out forwards;
+        .notice-item:not(:last-child) {
+            border-bottom: 1px solid #e5e7eb;
         }
-
-        .glowing-button {
-            animation: glow 3s infinite ease-in-out;
+        .hero-section {
+            background: linear-gradient(135deg, #003B5C 0%, #005a8b 100%);
         }
-        
-        /* Staggered animation delays */
-        .delay-1 { animation-delay: 0.2s; }
-        .delay-2 { animation-delay: 0.4s; }
-        .delay-3 { animation-delay: 0.6s; }
-        .delay-4 { animation-delay: 0.8s; }
-        .delay-5 { animation-delay: 1.0s; }
-        
-        /* Set initial state to transparent for fade-in effect */
-        .fade-in {
-            opacity: 0;
+        .quick-link-card {
+             border-radius: 16px;
+             padding: 1.5rem;
+             text-align: center;
+             transition: all 0.3s ease;
+             background-color: #ffffff;
+             color: #003B5C;
+             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+             border: 1px solid transparent;
+        }
+        .quick-link-card:hover {
+            transform: scale(1.05);
+            background-color: #003B5C;
+            color: white;
+            border-color: #f17922;
+        }
+        .quick-link-card i {
+            transition: transform 0.3s ease;
+        }
+        .quick-link-card:hover i {
+            transform: scale(1.2);
         }
     </style>
 </head>
-<body class="bg-gray-900 bg-gradient-to-br from-[#0a032c] via-[#100a3a] to-[#2b0b3f] text-white min-h-screen flex items-center justify-center p-4">
+<body class="text-gray-800">
 
-    <!-- Main Card -->
-    <main class="w-full max-w-md bg-gray-800 bg-opacity-40 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden border border-gray-700/50">
-        <div class="p-8 text-center">
-            
-            <!-- App Banner/Logo -->
-            <div class="fade-in delay-1">
-                <img src="https://i.ibb.co/TBMGPbHs/Sony-LIV-2020.png" alt="Sony LIV Logo" class="w-32 h-32 mx-auto rounded-full shadow-lg border-4 border-gray-700/80 mb-6 object-cover">
-            </div>
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-40" x-data="{ isProfileOpen: false }">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- Logo and Title -->
+            <a href="index.html" class="flex items-center space-x-3">
+                <img src="https://i.ibb.co/vxp4pdwC/IITM-BS-Hub.png" alt="IITM BS Hub Logo" class="h-10 w-10">
+                <span class="text-xl font-bold text-[#003B5C] hidden sm:block">IITM BS HUB</span>
+            </a>
 
-            <!-- App Name -->
-            <h1 class="text-4xl font-bold text-gray-100 tracking-tight fade-in delay-2">Sony LIV <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Mod APK</span></h1>
-            
-            <!-- App Version -->
-            <p class="text-sm font-semibold bg-blue-500/20 text-blue-300 rounded-full px-3 py-1 inline-block mt-3 border border-blue-400/30 fade-in delay-3">
-                v9.4.2 (Latest)
-            </p>
-
-            <!-- Separator -->
-            <hr class="border-gray-700/50 my-8 fade-in delay-4">
-
-            <!-- Features Section -->
-            <div class="text-left fade-in delay-4">
-                <h2 class="text-xl font-semibold mb-4 text-center">Mod Features</h2>
-                <ul class="space-y-3">
-                    <li class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span class="text-gray-300">Premium / VIP Unlocked</span>
-                    </li>
-                    <li class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span class="text-gray-300">Ads Free Experience</span>
-                    </li>
-                    <li class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span class="text-gray-300">Unlimited Content Access</span>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Download Button -->
-            <div class="mt-10 fade-in delay-5">
-                <a href="sony.apk" download class="download-btn glowing-button inline-block w-full py-4 px-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold text-lg rounded-xl shadow-lg transition-transform duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-400/50">
-                    Download Now
+            <!-- User Avatar / Login Button -->
+            <div class="relative">
+                <!-- Login Button (Logged out state) -->
+                <a href="login.html" id="login-button" class="hidden bg-[#f17922] text-white font-bold py-2 px-5 rounded-lg hover:bg-[#d96817] transition-colors">
+                    Login
                 </a>
+
+                <!-- User Avatar (Logged in state) -->
+                <div id="user-avatar-area" class="hidden">
+                    <button @click="isProfileOpen = !isProfileOpen" class="w-12 h-12 rounded-full overflow-hidden border-2 border-[#005a8b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#f17922]">
+                        <img src="https://placehold.co/100x100/003B5C/FFFFFF?text=U" alt="User Avatar" id="user-avatar-img">
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div x-show="isProfileOpen" @click.away="isProfileOpen = false" x-transition class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-2xl py-2 z-50 border">
+                        <div class="flex items-center px-4 py-3 border-b">
+                            <img src="https://placehold.co/100x100/003B5C/FFFFFF?text=U" alt="User Avatar" class="h-12 w-12 rounded-full mr-3" id="dropdown-user-img">
+                            <div>
+                                <p class="font-semibold text-gray-800 text-lg" id="user-name">Guest User</p>
+                                <p class="text-sm text-gray-500 truncate" id="user-email">email@example.com</p>
+                            </div>
+                        </div>
+                        <a href="#" id="logout-button" class="flex items-center w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50/50">
+                            <i class="fas fa-sign-out-alt w-5 mr-3"></i>Logout
+                        </a>
+                    </div>
+                </div>
             </div>
-            
         </div>
-        
-        <!-- Footer Credit -->
-        <footer class="text-center py-4 bg-black bg-opacity-20 border-t border-gray-700/50">
-            <p class="text-sm text-gray-400">
-                Modded by <a href="https://raojatin.xo.je/" target="_blank" rel="noopener noreferrer" class="font-semibold text-blue-400 hover:text-blue-300 transition-colors">Rao Jatin</a>
-            </p>
-        </footer>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section text-white">
+            <div class="container mx-auto px-4 md:px-6 lg:px-8 py-12 md:py-16 text-center">
+                <h1 class="text-3xl md:text-5xl font-bold mb-2">Welcome to Your Dashboard</h1>
+                <p class="text-lg text-white/80">All your resources, right at your fingertips.</p>
+            </div>
+        </section>
+
+        <div class="container mx-auto p-4 md:p-6 lg:p-8 -mt-16">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Left/Main Column -->
+                <div class="lg:col-span-2 space-y-8">
+
+                    <!-- Quick Links Section -->
+                     <section class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <a href="notes.html" class="quick-link-card">
+                            <i class="fas fa-book-open text-4xl mb-4"></i>
+                            <h3 class="text-xl font-bold">Get Notes</h3>
+                            <p class="text-sm opacity-80 mt-1">Access all your subject notes here.</p>
+                        </a>
+                        <a href="pyqs.html" class="quick-link-card">
+                            <i class="fas fa-file-alt text-4xl mb-4"></i>
+                            <h3 class="text-xl font-bold">Get PYQs</h3>
+                            <p class="text-sm opacity-80 mt-1">Previous Year Question Papers.</p>
+                        </a>
+                    </section>
+
+                    <!-- Notice Area -->
+                    <section id="notice-area" class="card p-5 md:p-6">
+                        <h2 class="text-2xl font-bold text-[#003B5C] mb-4 border-b pb-3 flex items-center">
+                            <i class="fas fa-bullhorn mr-3 text-[#f17922]"></i>Notice Board
+                        </h2>
+                        <div id="notice-list" class="space-y-3">
+                            <!-- Notices will be dynamically inserted here -->
+                            <div class="notice-item p-3">
+                                <p class="font-semibold text-gray-800">Loading notices...</p>
+                            </div>
+                        </div>
+                    </section>
+                     <!-- Class Schedule -->
+                    <section class="card overflow-hidden">
+                        <div class="p-5 md:p-6">
+                            <h2 class="text-2xl font-bold text-[#003B5C] mb-4 flex items-center">
+                               <i class="fas fa-calendar-alt mr-3 text-[#f17922]"></i>Live Class Schedule
+                            </h2>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-gray-50/70 text-xs text-gray-700 uppercase tracking-wider">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3">Date</th>
+                                        <th scope="col" class="px-6 py-3">Time</th>
+                                        <th scope="col" class="px-6 py-3">Subject</th>
+                                        <th scope="col" class="px-6 py-3">Topic / Link</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="schedule-body">
+                                    <!-- Schedule will be dynamically inserted here -->
+                                    <tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">Loading schedule...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Right/Side Column -->
+                <div class="space-y-8">
+                     <section class="card p-6 text-center bg-green-500 text-white">
+                        <i class="fab fa-whatsapp text-5xl mb-3"></i>
+                        <h3 class="text-xl font-bold mb-3">Stay Connected</h3>
+                        <p class="opacity-90 mb-4">Join our official WhatsApp channel for instant updates.</p>
+                        <a href="#" id="whatsapp-link" target="_blank" class="w-full block bg-white text-green-600 font-bold py-3 px-4 rounded-lg hover:bg-white/90 transition-colors">
+                            Join Channel
+                        </a>
+                     </section>
+
+                     <section class="card p-6">
+                         <h3 class="text-xl font-bold text-gray-800 mb-4">Support Center</h3>
+                         <p class="text-gray-500 mb-4">Facing an issue or have a suggestion? Let us know!</p>
+                         <a href="support.html" class="w-full block text-center bg-gray-200 text-gray-800 font-bold py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors">
+                            Need an Update?
+                        </a>
+                     </section>
+                </div>
+            </div>
+        </div>
     </main>
+    
+    <!-- Floating Chat Button -->
+    <a href="chat.html" class="fixed bottom-6 right-6 bg-[#003B5C] w-16 h-16 rounded-full flex items-center justify-center text-white shadow-2xl transform hover:scale-110 transition-transform duration-300">
+        <i class="fas fa-comments text-2xl"></i>
+    </a>
 
+    <!-- Footer -->
+    <footer class="bg-white mt-12 py-6 border-t">
+        <div class="container mx-auto px-4 text-center text-gray-600 text-sm">
+             A WEBSITE BY 
+            <a href="https://raodevelopers.xyz" target="_blank" rel="noopener noreferrer" class="font-bold text-[#003B5C] hover:underline">
+                RAO DEVELOPERS
+            </a>
+        </div>
+    </footer>
+
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        // import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAC47u3mXuciaavoov2Td2AaI8TiOwV7eY",
+            authDomain: "iitm-74779.firebaseapp.com",
+            projectId: "iitm-74779",
+            storageBucket: "iitm-74779.appspot.com",
+            messagingSenderId: "49030766593",
+            appId: "1:49030766593:web:99b7eae829f4af82556000"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        // const db = getFirestore(app);
+
+        const loginButton = document.getElementById('login-button');
+        const userAvatarArea = document.getElementById('user-avatar-area');
+        const logoutButton = document.getElementById('logout-button');
+        const userNameEl = document.getElementById('user-name');
+        const userEmailEl = document.getElementById('user-email');
+        
+        // --- Mock Data (Replace with Firestore calls) ---
+        const mockNotices = [
+            { id: 1, title: "End-term exam schedule for May 2024 has been released.", date: "2024-04-25", isNew: true },
+            { id: 2, title: "Registration for upcoming qualifier exam is now open.", date: "2024-04-22", isNew: true },
+            { id: 3, title: "Results for Quiz 2 have been published on the portal.", date: "2024-04-20", isNew: false },
+            { id: 4, title: "Guest lecture on 'AI in Modern Computing' this Friday.", date: "2024-04-18", isNew: false },
+            { id: 5, title: "Reminder: Project submission deadline is approaching.", date: "2024-04-15", isNew: false },
+        ];
+        
+        const mockSchedule = [
+            { date: 'Mon, 29 Apr', time: '6-7 PM', subject: 'Maths II', topic: 'Linear Transformations' },
+            { date: 'Tue, 30 Apr', time: '7-8 PM', subject: 'Stats II', topic: 'Confidence Intervals' },
+            { date: 'Wed, 1 May', time: '6-7 PM', subject: 'English II', topic: 'Advanced Grammar' },
+            { date: 'Thu, 2 May', time: '8-9 PM', subject: 'CT', topic: 'Algorithm Design' },
+        ];
+        
+        const mockWhatsappLink = "https://whatsapp.com/channel/your-channel-id";
+
+        // --- Functions to render mock data ---
+        function renderNotices() {
+            const noticeList = document.getElementById('notice-list');
+            noticeList.innerHTML = '';
+            mockNotices.forEach(notice => {
+                noticeList.innerHTML += `
+                    <div class="notice-item p-3 flex items-start hover:bg-gray-50/50 rounded-lg">
+                        <i class="fas fa-bell text-[#005a8b] mt-1 mr-4"></i>
+                        <div>
+                           <p class="font-semibold text-gray-800">${notice.title}</p>
+                           <p class="text-xs text-gray-500">${notice.date} ${notice.isNew ? '<span class="ml-2 bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">NEW</span>' : ''}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderSchedule() {
+            const scheduleBody = document.getElementById('schedule-body');
+            scheduleBody.innerHTML = '';
+            mockSchedule.forEach(item => {
+                scheduleBody.innerHTML += `
+                    <tr class="bg-white border-b hover:bg-gray-50/50">
+                        <td class="px-6 py-4 font-medium text-gray-900">${item.date}</td>
+                        <td class="px-6 py-4">${item.time}</td>
+                        <td class="px-6 py-4">${item.subject}</td>
+                        <td class="px-6 py-4">
+                            <a href="#" class="font-medium text-[#005a8b] hover:underline">${item.topic}</a>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        
+        function renderWhatsappLink() {
+            document.getElementById('whatsapp-link').href = mockWhatsappLink;
+        }
+
+
+        // --- Auth State Management ---
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                // User is signed in
+                loginButton.classList.add('hidden');
+                userAvatarArea.classList.remove('hidden');
+                
+                userEmailEl.textContent = user.email;
+
+                // Derive name from email
+                if (user.email) {
+                    const nameFromEmail = user.email.split('@')[0];
+                    // Capitalize the first letter
+                    const formattedName = nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1);
+                    userNameEl.textContent = formattedName;
+                } else {
+                    userNameEl.textContent = "User"; // Fallback
+                }
+
+                const initial = userNameEl.textContent.charAt(0).toUpperCase();
+                const avatarUrl = `https://placehold.co/100x100/003B5C/FFFFFF?text=${initial}`;
+                document.getElementById('user-avatar-img').src = avatarUrl;
+                document.getElementById('dropdown-user-img').src = avatarUrl;
+
+            } else {
+                // User is signed out
+                loginButton.classList.remove('hidden');
+                userAvatarArea.classList.add('hidden');
+            }
+        });
+
+        // --- Logout Functionality ---
+        logoutButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => {
+                window.location.href = 'login.html';
+            }).catch((error) => {
+                console.error("Logout Error:", error);
+                alert("Failed to logout. Please try again.");
+            });
+        });
+
+        // --- Initial Data Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNotices();
+            renderSchedule();
+            renderWhatsappLink();
+        });
+
+    </script>
 </body>
 </html>
 
-      With just one click on Telegram!  
-    </p>
-  </header>
-
-  <section>
-    <h2>How to Get All Apps Premium?</h2>
-    <div class="steps">
-      1. Click on Telegram Channel Button<br/>
-      2. Join our Telegram channel<br/>
-      3. Open Discussion Group<br/>
-      4. Send application name which premium unlock you want<br/>
-      5. That's all! You get your app link in a sec
-    </div>
-
-    <a class="join-btn" href="https://t.me/nottmodz" target="_blank">Join Telegram Channel</a>
-  </section>
-
-  <section class="picture-section">
-    <h2>Understand by Picture</h2>
-    <div class="steps">
-      <p><strong>Step 1:</strong> Click on Telegram Button ✅</p>
-      <img src="https://i.ibb.co/rKnPybtR/Picsart-25-04-30-18-58-35-207.jpg" alt="Step 1">
-
-      <p><strong>Step 2:</strong> Click on View on Telegram Button ✅</p>
-      <p>⚠️ If you don't have Telegram, download from here:</p>
-      <a class="join-btn" href="https://play.google.com/store/apps/details?id=org.telegram.messenger" target="_blank">Download Telegram</a>
-      <img src="https://i.ibb.co/pvJnkTyG/Picsart-25-04-30-19-00-09-548.jpg" alt="Step 2">
-
-      <p><strong>Step 3:</strong> Join @nottmodz Channel then join all channels by clicking on "Get Link" 🖇️</p>
-      <img src="https://i.ibb.co/RGHs1xz1/Picsart-25-04-30-19-01-21-724.jpg" alt="Step 3">
-
-      <p><strong>Step 4:</strong> Open discussion group and send your app name which premium unlock you want. Send the message in group.</p>
-      <img src="https://i.ibb.co/TM85qXMF/Picsart-25-04-30-19-02-08-013.jpg" alt="Step 4">
-
-      <p><strong>Step 5:</strong> That's all! See — you get your app download link. Enjoy and share us!</p>
-      <img src="https://i.ibb.co/YFBBb2WD/Picsart-25-04-30-19-04-16-405.jpg" alt="Step 5">
-    </div>
-  </section>
-
-  <div class="footer">
-    We respect copyright. No copyright content is intended by us.<br/>
-    If you want to remove any content, contact us at: <br/>
-    <strong>jatinhelpline89@gmail.com</strong><br/><br/>
-    Thanks, Team Nottmodz
-  </div>
-
-</body>
-</html>

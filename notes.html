@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Notes - IITM BS Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Reusing variables and base styles from index.html for consistency */
+        :root {
+            --primary-color: #4A90E2;
+            --secondary-color: #50E3C2;
+            --background-light: #F9FAFB;
+            --background-dark: #1A2B45;
+            --text-dark: #2D3748;
+            --text-light: #F7FAFC;
+            --white: #FFFFFF;
+            --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header and Footer styles (copied from index.html for consistency) */
+        .main-header {
+            background-color: var(--white);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .main-header .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.6rem; font-weight: 800; color: var(--primary-color); text-decoration: none; }
+        .main-nav ul { display: flex; list-style: none; align-items: center; }
+        .main-nav ul li { margin-left: 30px; }
+        .main-nav ul li a { text-decoration: none; color: var(--text-dark); font-weight: 600; position: relative; padding-bottom: 5px; }
+        .main-nav ul li a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background-color: var(--secondary-color); transition: width 0.3s ease; }
+        .main-nav ul li a:hover::after, .main-nav ul li a.active::after { width: 100%; }
+        .hamburger { display: none; cursor: pointer; font-size: 28px; color: var(--primary-color); }
+        .main-footer { background-color: var(--background-dark); color: var(--text-light); text-align: center; padding: 40px 0; }
+        .main-footer a { color: var(--text-light); text-decoration: none; margin: 0 10px; opacity: 0.8; transition: opacity 0.3s ease; }
+        .main-footer a:hover { opacity: 1; }
+
+        /* Notes Page Specific Styles */
+        .page-header {
+            padding: 60px 20px;
+            background: linear-gradient(45deg, #4A90E2, #50E3C2);
+            text-align: center;
+            color: var(--white);
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .notes-section {
+            padding: 60px 0;
+        }
+
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 40px;
+            background: var(--white);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+        }
+
+        .filter-controls input, .filter-controls select {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            flex-grow: 1;
+        }
+        
+        .filter-controls input {
+            min-width: 300px;
+        }
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .note-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .note-card-content {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .note-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .tag {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 20px;
+            color: var(--white);
+        }
+        
+        .tag-subject { background-color: var(--primary-color); }
+        .tag-term { background-color: var(--secondary-color); color: var(--text-dark); }
+        
+        .note-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: auto;
+            color: var(--text-dark);
+            line-height: 1.4;
+        }
+
+        .note-card-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        
+        .note-card-footer svg {
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+
+        .btn-download {
+            margin-left: auto;
+            background: var(--primary-color);
+            color: var(--white);
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn-download:hover {
+            background-color: #357ABD;
+        }
+
+        .status-message {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: #666;
+            grid-column: 1 / -1; /* Make it span all columns */
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-nav { display: none; /* Simplified for brevity */ }
+            .hamburger { display: block; }
+            .page-header h1 { font-size: 2.2rem; }
+            .filter-controls { flex-direction: column; }
+            .filter-controls input { min-width: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container">
+            <a href="index.html" class="logo">IITM BS Hub</a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="notes.html" class="active">Notes</a></li>
+                    <li><a href="schedule.html">Schedule</a></li>
+                    <li><a href="admitcard.html">Admit Card</a></li>
+                    <li><a href="notifications.html">Notifications</a></li>
+                    <li><a href="about.html">About</a></li>
+                </ul>
+            </nav>
+            <div class="hamburger">☰</div>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <h1>Course Notes & Resources</h1>
+            <p>Find and download all your course materials in one place.</p>
+        </section>
+        
+        <section class="notes-section">
+            <div class="container">
+                <div class="filter-controls">
+                    <input type="text" id="search-bar" placeholder="Search by note title...">
+                    <select id="term-filter">
+                        <option value="">Filter by Term</option>
+                    </select>
+                    <select id="subject-filter">
+                        <option value="">Filter by Subject</option>
+                    </select>
+                </div>
+
+                <div class="notes-grid" id="notes-grid">
+                    <p class="status-message">Loading notes...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>Made with love by Rao Jatin</p>
+            <p><a href="#">About</a> | <a href="#">Contact</a> | <a href="#">Privacy</a></p>
+        </div>
+    </footer>
+
+    <script type="module">
+        // Import Firebase functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        // Firebase configuration (remains for when you want to connect it)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKAu9JvYmpQNvH1ES_Ax3q6qUFZX061Rw",
+            authDomain: "raosuplode.firebaseapp.com",
+            databaseURL: "https://raosuplode-default-rtdb.firebaseio.com",
+            projectId: "raosuplode",
+            storageBucket: "raosuplode.appspot.com",
+            messagingSenderId: "275156697009",
+            appId: "1:275156697009:web:988cc8dc82f59e0535c790"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // --- DOM Elements ---
+        const notesGrid = document.getElementById('notes-grid');
+        const searchBar = document.getElementById('search-bar');
+        const termFilter = document.getElementById('term-filter');
+        const subjectFilter = document.getElementById('subject-filter');
+
+        let allNotes = [];
+
+        // --- Sample Data (As Requested) ---
+        const sampleNotes = [
+            { title: 'Week 1 Lecture Notes', subject: 'Mathematics for Data Science I', term: 1, fileURL: '#' },
+            { title: 'Week 2 Practice Problems', subject: 'Mathematics for Data Science I', term: 1, fileURL: '#' },
+            { title: 'Week 1 Slides', subject: 'Statistics for Data Science I', term: 1, fileURL: '#' },
+            { title: 'Week 2 Notes', subject: 'Statistics for Data Science I', term: 1, fileURL: '#' },
+            { title: 'Intro to Algorithms', subject: 'Computational Thinking', term: 1, fileURL: '#' },
+            { title: 'Python Basics Cheat Sheet', subject: 'Computational Thinking', term: 1, fileURL: '#' },
+            { title: 'Grammar and Composition', subject: 'English I', term: 1, fileURL: '#' },
+            { title: 'Week 1 Lecture Notes', subject: 'Mathematics for Data Science II', term: 2, fileURL: '#' },
+            { title: 'Week 2 Practice Problems', subject: 'Mathematics for Data Science II', term: 2, fileURL: '#' },
+            { title: 'Week 1 Slides', subject: 'Statistics for Data Science II', term: 2, fileURL: '#' },
+            { title: 'Week 2 Notes', subject: 'Statistics for Data Science II', term: 2, fileURL: '#' },
+            { title: 'Data Structures in Python', subject: 'Programming in Python', term: 2, fileURL: '#' },
+            { title: 'Object-Oriented Programming', subject: 'Programming in Python', term: 2, fileURL: '#' },
+            { title: 'Advanced Reading Comprehension', subject: 'English II', term: 2, fileURL: '#' }
+        ];
+
+        // --- Functions ---
+        function renderNotes(notesToRender) {
+            notesGrid.innerHTML = '';
+            if (notesToRender.length === 0) {
+                notesGrid.innerHTML = '<p class="status-message">No notes found matching your criteria.</p>';
+                return;
+            }
+            notesToRender.forEach(note => {
+                const card = document.createElement('div');
+                card.className = 'note-card';
+                card.innerHTML = `
+                    <div class="note-card-content">
+                        <div class="note-card-tags">
+                            <span class="tag tag-subject">${note.subject}</span>
+                            <span class="tag tag-term">Term ${note.term}</span>
+                        </div>
+                        <h3>${note.title}</h3>
+                    </div>
+                    <div class="note-card-footer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        <span>PDF Document</span>
+                        <a href="${note.fileURL}" target="_blank" rel="noopener noreferrer" class="btn-download">Download</a>
+                    </div>
+                `;
+                notesGrid.appendChild(card);
+            });
+        }
+        
+        function populateFilters() {
+            const subjects = [...new Set(allNotes.map(note => note.subject))];
+            const terms = [...new Set(allNotes.map(note => note.term))];
+            
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject;
+                option.textContent = subject;
+                subjectFilter.appendChild(option);
+            });
+            terms.sort().forEach(term => {
+                const option = document.createElement('option');
+                option.value = term;
+                option.textContent = `Term ${term}`;
+                termFilter.appendChild(option);
+            });
+        }
+        
+        function applyFilters() {
+            const searchTerm = searchBar.value.toLowerCase();
+            const selectedTerm = termFilter.value;
+            const selectedSubject = subjectFilter.value;
+
+            let filteredNotes = allNotes;
+            if (searchTerm) {
+                filteredNotes = filteredNotes.filter(note => note.title.toLowerCase().includes(searchTerm));
+            }
+            if (selectedTerm) {
+                filteredNotes = filteredNotes.filter(note => note.term == selectedTerm);
+            }
+            if (selectedSubject) {
+                filteredNotes = filteredNotes.filter(note => note.subject === selectedSubject);
+            }
+            renderNotes(filteredNotes);
+        }
+
+        async function main() {
+            
+            // --- USING SAMPLE DATA ---
+            // To switch to live Firebase data, comment out this block...
+            allNotes = sampleNotes;
+            if (allNotes.length > 0) {
+                populateFilters();
+                renderNotes(allNotes);
+            } else {
+                notesGrid.innerHTML = '<p class="status-message">📚 No notes have been uploaded yet.</p>';
+            }
+            // --- END OF SAMPLE DATA BLOCK ---
+
+
+            /*
+            // --- USING FIREBASE DATA ---
+            // ...and uncomment this 'try...catch' block below.
+            try {
+                const notesRef = ref(database, 'notes');
+                const snapshot = await get(notesRef);
+                
+                if (snapshot.exists()) {
+                    const notesData = snapshot.val();
+                    allNotes = Object.keys(notesData).map(key => ({ id: key, ...notesData[key] }));
+                    populateFilters();
+                    renderNotes(allNotes);
+                } else {
+                    notesGrid.innerHTML = '<p class="status-message">📚 No notes have been uploaded yet. Check back soon!</p>';
+                }
+            } catch (error) {
+                console.error("Error fetching notes:", error);
+                notesGrid.innerHTML = '<p class="status-message">Error loading notes. Please check your connection and try again.</p>';
+            }
+            */
+        }
+
+        // --- Event Listeners ---
+        searchBar.addEventListener('input', applyFilters);
+        termFilter.addEventListener('change', applyFilters);
+        subjectFilter.addEventListener('change', applyFilters);
+
+        // Initial load
+        main();
+
+    </script>
+</body>
+</html>

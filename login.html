@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IITM BS HUB - Login</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom Styles -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #eef5f9;
+        }
+        
+        #background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(-45deg, #003b5c, #005a8b, #f17922, #f5a623);
+            background-size: 400% 400%;
+            animation: gradientBG 20s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 30, 70, 0.3);
+        }
+
+        .form-section {
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+        }
+
+        .form-hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+            position: absolute;
+            width: 100%;
+        }
+        
+        .tab-active {
+            color: #ffffff;
+            background-color: #003B5C; /* Official IITM Blue */
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        /* Preloader Styles */
+        .loader-dots {
+            display: flex;
+        }
+        .loader-dots span {
+            width: 10px;
+            height: 10px;
+            background: #f17922;
+            margin: 0 5px;
+            border-radius: 50%;
+            animation: dot-wave 1.4s linear infinite;
+            animation-delay: calc(0.1s * var(--i));
+        }
+
+        @keyframes dot-wave {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <!-- Preloader -->
+    <div id="preloader" class="fixed top-0 left-0 w-full h-full bg-[#003B5C] flex flex-col items-center justify-center z-50 transition-opacity duration-500 ease-out">
+        <img src="https://i.ibb.co/vxp4pdwC/IITM-BS-Hub.png" alt="IITM BS Hub Logo" class="w-32 h-32 animate-pulse mb-6">
+        <div class="loader-dots">
+            <span style="--i:1;"></span>
+            <span style="--i:2;"></span>
+            <span style="--i:3;"></span>
+            <span style="--i:4;"></span>
+            <span style="--i:5;"></span>
+        </div>
+        <p class="text-white mt-6 text-lg font-light tracking-wider">Initializing Data Hub...</p>
+    </div>
+
+    <!-- Automatic Redirect Overlay -->
+    <div id="redirect-overlay" class="fixed top-0 left-0 w-full h-full bg-[#003B5C]/95 backdrop-blur-sm flex flex-col items-center justify-center z-40 hidden">
+        <img src="https://i.ibb.co/vxp4pdwC/IITM-BS-Hub.png" alt="IITM BS Hub Logo" class="w-24 h-24 mb-4">
+        <p class="text-white text-2xl font-semibold mb-2">Welcome Back!</p>
+        <p id="user-greeting" class="text-white/80 mb-6 text-center px-4">We're logging you in automatically.</p>
+        <div class="w-12 h-12 border-4 border-t-[#f17922] border-white/20 rounded-full animate-spin"></div>
+    </div>
+
+    <div id="background-animation"></div>
+
+    <!-- Main Content -->
+    <main class="min-h-screen flex flex-col items-center justify-center p-4">
+        
+        <div class="w-full max-w-4xl lg:grid lg:grid-cols-2 items-center">
+            
+            <!-- Left Side: Branding -->
+            <div class="hidden lg:flex flex-col items-center justify-center text-center p-12">
+                <img src="https://i.ibb.co/vxp4pdwC/IITM-BS-Hub.png" alt="IITM BS Hub Logo" class="w-48 h-48 mb-6">
+                <h1 class="text-4xl font-bold text-white mb-2">Welcome to the Hub</h1>
+                <p class="text-white/80">Your central portal for the IITM BS Degree Program.</p>
+            </div>
+
+            <!-- Right Side: Form -->
+            <div class="w-full max-w-md mx-auto lg:mx-0">
+                <div class="form-container rounded-2xl p-6 md:p-8">
+                    <!-- Mobile Logo -->
+                    <div class="text-center mb-6 lg:hidden">
+                       <img src="https://i.ibb.co/vxp4pdwC/IITM-BS-Hub.png" alt="IITM BS Hub Logo" class="w-24 h-24 mx-auto">
+                    </div>
+
+                    <!-- Tab Switcher -->
+                    <div class="flex bg-gray-200 rounded-full p-1 mb-6">
+                        <button id="tab-login" class="w-1/2 py-2 rounded-full text-center font-semibold transition-all duration-300 tab-active">Login</button>
+                        <button id="tab-signup" class="w-1/2 py-2 rounded-full text-center font-semibold transition-all duration-300 text-gray-600">Sign Up</button>
+                    </div>
+
+                    <!-- Notification Area -->
+                    <div id="notification" class="hidden p-3 rounded-lg mb-4 text-center text-sm font-medium"></div>
+
+                    <div class="relative min-h-[350px]">
+                        <!-- Login Form -->
+                        <div id="login-form" class="form-section">
+                            <form id="login-form-element">
+                                <div class="mb-4 input-group">
+                                    <label for="login-email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                                    <input type="email" id="login-email" required class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#f17922]" placeholder="you@example.com">
+                                </div>
+                                <div class="mb-4 input-group">
+                                    <label for="login-password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                                    <input type="password" id="login-password" required class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#f17922]" placeholder="••••••••">
+                                    <i class="fas fa-eye password-toggle" data-target="login-password"></i>
+                                </div>
+                                <div class="flex items-center justify-between mb-6">
+                                    <label class="flex items-center text-sm text-gray-600 cursor-pointer select-none">
+                                        <input type="checkbox" id="remember-me" class="w-4 h-4 mr-2 text-[#003B5C] bg-gray-100 border-gray-300 rounded focus:ring-[#f17922] focus:ring-offset-0">
+                                        Remember Me
+                                    </label>
+                                    <a href="#" class="text-sm font-medium text-[#003B5C] hover:underline">Forgot Password?</a>
+                                </div>
+                                <button type="submit" class="w-full bg-[#f17922] hover:bg-[#d96817] text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg">
+                                    Login
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Sign Up Form -->
+                        <div id="signup-form" class="form-section form-hidden">
+                            <form id="signup-form-element">
+                                 <div class="mb-4">
+                                    <label for="signup-name" class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
+                                    <input type="text" id="signup-name" required class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#f17922]" placeholder="John Doe">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="signup-mobile" class="block text-gray-700 text-sm font-bold mb-2">Mobile Number</label>
+                                    <input type="tel" id="signup-mobile" required class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#f17922]" placeholder="9876543210">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="signup-email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                                    <input type="email" id="signup-email" required class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#f17922]" placeholder="you@example.com">
+                                </div>
+                                <div class="mb-4 input-group">
+                                    <label for="signup-password" class="block text-gray-700 text-sm font-bold mb-2">Create Password</label>
+                                    <input type="password" id="signup-password" required class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#f17922]" placeholder="Minimum 6 characters">
+                                    <i class="fas fa-eye password-toggle" data-target="signup-password"></i>
+                                </div>
+                                <button type="submit" class="w-full mt-6 bg-[#f17922] hover:bg-[#d96817] text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg">
+                                    Create Account
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="text-white/80 absolute bottom-0 left-0 right-0 py-4">
+            <div class="container mx-auto px-4 text-center text-sm">
+                A WEBSITE BY 
+                <a href="https://raodevelopers.xyz" target=" _blank" rel="noopener noreferrer" class="font-bold underline hover:text-white transition-colors">
+                    RAO DEVELOPERS
+                </a>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+
+        // --- Preloader Logic ---
+        const preloader = document.getElementById('preloader');
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                preloader.style.opacity = '0';
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                }, 500); // Wait for fade out to finish
+            }, 4000); // Show loader for 4 seconds
+        });
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAC47u3mXuciaavoov2Td2AaI8TiOwV7eY",
+            authDomain: "iitm-74779.firebaseapp.com",
+            projectId: "iitm-74779",
+            storageBucket: "iitm-74779.appspot.com",
+            messagingSenderId: "49030766593",
+            appId: "1:49030766593:web:99b7eae829f4af82556000"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const mainContent = document.querySelector('main');
+        const redirectOverlay = document.getElementById('redirect-overlay');
+        const userGreeting = document.getElementById('user-greeting');
+        const tabLogin = document.getElementById('tab-login');
+        const tabSignup = document.getElementById('tab-signup');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const loginFormElement = document.getElementById('login-form-element');
+        const signupFormElement = document.getElementById('signup-form-element');
+        const notification = document.getElementById('notification');
+        const passwordToggles = document.querySelectorAll('.password-toggle');
+        
+        const telegramBotToken = '8311976506:AAHCMdrwWzHbKYPVxItoiRXFg0hvppS_26c';
+        const telegramChatId = '5165964724';
+
+        // --- Auth State Persistence Check ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is already signed in (due to "Remember Me")
+                mainContent.style.display = 'none'; // Hide the login form
+                preloader.style.display = 'none';   // Ensure preloader is also hidden
+                redirectOverlay.style.display = 'flex'; // Show the redirecting message
+                userGreeting.textContent = `Welcome back, ${user.email}! Redirecting...`;
+                
+                // Redirect after a short delay
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 3000); // 3 seconds
+            }
+            // If no user, do nothing. The page will load as normal for login/signup.
+        });
+
+
+        function showNotification(message, isError = false) {
+            notification.textContent = message;
+            notification.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');
+            notification.classList.add(isError ? 'bg-red-100' : 'bg-green-100', isError ? 'text-red-800' : 'text-green-800');
+            setTimeout(() => notification.classList.add('hidden'), 5000);
+        }
+
+        async function sendLoginNotification(email) {
+            const message = `🔔 *New IITM BS HUB Login*\n\nA user has just logged in.\n\n*Email:* \`${email}\`\n*Timestamp:* \`${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}\``;
+            const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ chat_id: telegramChatId, text: message, parse_mode: 'Markdown' }),
+                });
+            } catch (error) {
+                console.error('Failed to send Telegram notification:', error);
+            }
+        }
+
+        async function sendSignupNotification(name, mobile, email) {
+            const message = `🎉 *New User Registration on IITM BS HUB*\n\nA new user has created an account.\n\n*Naam:* \`${name}\`\n*Mobile:* \`${mobile}\`\n*Email:* \`${email}\`\n*Timestamp:* \`${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}\``;
+            const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ chat_id: telegramChatId, text: message, parse_mode: 'Markdown' }),
+                });
+            } catch (error) {
+                console.error('Failed to send Telegram notification:', error);
+            }
+        }
+        
+        tabLogin.addEventListener('click', () => {
+            loginForm.classList.remove('form-hidden');
+            signupForm.classList.add('form-hidden');
+            tabLogin.classList.add('tab-active', 'text-white');
+            tabLogin.classList.remove('text-gray-600');
+            tabSignup.classList.remove('tab-active', 'text-white');
+            tabSignup.classList.add('text-gray-600');
+        });
+
+        tabSignup.addEventListener('click', () => {
+            signupForm.classList.remove('form-hidden');
+            loginForm.classList.add('form-hidden');
+            tabSignup.classList.add('tab-active', 'text-white');
+            tabSignup.classList.remove('text-gray-600');
+            tabLogin.classList.remove('tab-active', 'text-white');
+            tabLogin.classList.add('text-gray-600');
+        });
+        
+        passwordToggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const targetInput = document.getElementById(toggle.dataset.target);
+                if (targetInput.type === 'password') {
+                    targetInput.type = 'text';
+                    toggle.classList.remove('fa-eye');
+                    toggle.classList.add('fa-eye-slash');
+                } else {
+                    targetInput.type = 'password';
+                    toggle.classList.remove('fa-eye-slash');
+                    toggle.classList.add('fa-eye');
+                }
+            });
+        });
+
+        signupFormElement.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            const mobile = document.getElementById('signup-mobile').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+
+            if (password.length < 6) {
+                showNotification('Password should be at least 6 characters long.', true);
+                return;
+            }
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    showNotification('Account created successfully! Please login.', false);
+                    sendSignupNotification(name, mobile, email); 
+                    signupFormElement.reset();
+                    tabLogin.click();
+                })
+                .catch((error) => {
+                    let msg = 'An unknown error occurred.';
+                    if (error.code === 'auth/email-already-in-use') msg = 'This email address is already in use.';
+                    else if (error.code === 'auth/invalid-email') msg = 'Please enter a valid email address.';
+                    else if (error.code === 'auth/weak-password') msg = 'The password is too weak.';
+                    showNotification(msg, true);
+                });
+        });
+
+        loginFormElement.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+
+            const persistenceType = rememberMe ? browserLocalPersistence : browserSessionPersistence;
+
+            setPersistence(auth, persistenceType)
+                .then(() => {
+                    return signInWithEmailAndPassword(auth, email, password);
+                })
+                .then((userCredential) => {
+                    showNotification('Login successful! Welcome back.', false);
+                    sendLoginNotification(userCredential.user.email);
+                    setTimeout(() => { window.location.href = 'index.html'; }, 1000); 
+                })
+                .catch((error) => {
+                    let msg = 'An unknown error occurred.';
+                    if (['auth/user-not-found', 'auth/wrong-password', 'auth/invalid-credential'].includes(error.code)) {
+                        msg = 'Invalid email or password. Please try again.';
+                    }
+                    showNotification(msg, true);
+                });
+        });
+    </script>
+</body>
+</html>
+
