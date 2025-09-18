@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IITM BS HUB - Notes</title>
+    <title>IITM BS HUB - PYQs</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Poppins -->
@@ -106,17 +106,17 @@
         <!-- Hero Section -->
         <section class="hero-section">
             <div class="container mx-auto px-4 md:px-6 lg:px-8 py-16 md:py-24 text-center">
-                <h1 class="text-4xl md:text-6xl font-extrabold mb-3 tracking-tight">Course Notes</h1>
-                <p class="text-lg text-white/80 max-w-2xl mx-auto">Your comprehensive library of notes for every subject and every week. Organized for your success.</p>
+                <h1 class="text-4xl md:text-6xl font-extrabold mb-3 tracking-tight">Previous Year Questions</h1>
+                <p class="text-lg text-white/80 max-w-2xl mx-auto">Ace your exams by practicing with our extensive collection of past question papers.</p>
             </div>
         </section>
 
-        <!-- Notes Container -->
-        <div id="notes-container" class="container mx-auto p-4 md:p-6 lg:p-8 -mt-12 space-y-10">
+        <!-- PYQs Container -->
+        <div id="pyq-container" class="container mx-auto p-4 md:p-6 lg:p-8 -mt-12 space-y-10">
             <!-- Initial Loading State -->
             <div class="text-center py-10">
                 <div class="w-12 h-12 border-4 border-t-[#f17922] border-white/20 rounded-full animate-spin mx-auto"></div>
-                <p class="mt-4 text-gray-300">Loading notes...</p>
+                <p class="mt-4 text-gray-300">Loading PYQs...</p>
             </div>
         </div>
     </main>
@@ -160,56 +160,55 @@
         const logoutButton = document.getElementById('logout-button');
         const userNameEl = document.getElementById('user-name');
         const userEmailEl = document.getElementById('user-email');
-        const notesContainer = document.getElementById('notes-container');
+        const pyqContainer = document.getElementById('pyq-container');
         
-        // --- Function to fetch and render notes from Firestore ---
-        async function fetchAndRenderNotes() {
-            if (!notesContainer) return;
+        // --- Function to fetch and render PYQs from Firestore ---
+        async function fetchAndRenderPYQs() {
+            if (!pyqContainer) return;
             
             try {
-                // 1. Fetch data from your 'notes' collection in Firestore.
-                // Make sure your collection is named 'notes' or change the name here.
-                const notesCollectionRef = collection(db, "notes_topics"); // Or whatever you name the collection for topics
-                const q = query(notesCollectionRef, orderBy("createdAt", "desc")); // Optional: order by creation time
+                // 1. Fetch data from your 'pyq_topics' collection in Firestore.
+                const pyqCollectionRef = collection(db, "pyq_topics"); 
+                const q = query(pyqCollectionRef, orderBy("year", "desc")); // Order by year
                 const querySnapshot = await getDocs(q);
 
-                const notesData = [];
+                const pyqData = [];
                 for (const doc of querySnapshot.docs) {
-                    const topicData = { id: doc.id, ...doc.data(), notes: [] };
+                    const topicData = { id: doc.id, ...doc.data(), papers: [] };
                     
-                    // For each topic, fetch the notes inside its subcollection
-                    const notesSubcollectionRef = collection(db, `notes_topics/${doc.id}/notes`);
-                    const notesSnapshot = await getDocs(notesSubcollectionRef);
-                    notesSnapshot.forEach(noteDoc => {
-                         topicData.notes.push({ id: noteDoc.id, ...noteDoc.data() });
+                    // For each topic, fetch the papers inside its subcollection
+                    const papersSubcollectionRef = collection(db, `pyq_topics/${doc.id}/papers`);
+                    const papersSnapshot = await getDocs(papersSubcollectionRef);
+                    papersSnapshot.forEach(paperDoc => {
+                         topicData.papers.push({ id: paperDoc.id, ...paperDoc.data() });
                     });
-                    notesData.push(topicData);
+                    pyqData.push(topicData);
                 }
 
-                if (notesData.length === 0) {
-                     notesContainer.innerHTML = `
+                if (pyqData.length === 0) {
+                     pyqContainer.innerHTML = `
                         <div class="text-center py-10 glass-card">
                            <i class="fas fa-file-circle-xmark text-5xl text-[#f17922]"></i>
-                           <h2 class="mt-4 text-2xl font-bold">No Notes Found</h2>
-                           <p class="text-gray-300">Notes will appear here once they are added by the admin.</p>
+                           <h2 class="mt-4 text-2xl font-bold">No PYQs Found</h2>
+                           <p class="text-gray-300">Question papers will appear here once added by the admin.</p>
                         </div>
                      `;
                      return;
                 }
 
-                notesContainer.innerHTML = ''; // Clear loading spinner
+                pyqContainer.innerHTML = ''; // Clear loading spinner
 
                 // 2. Render the fetched data
-                notesData.forEach((section, index) => {
+                pyqData.forEach((section, index) => {
                     let tableRows = '';
-                    section.notes.forEach(note => {
+                    section.papers.forEach(paper => {
                         tableRows += `
                             <tr class="border-b border-white/10 hover:bg-white/10">
-                                <td class="px-6 py-4 font-semibold">${note.subject || 'N/A'}</td>
-                                <td class="px-6 py-4 text-gray-300">${note.week || 'N/A'}</td>
-                                <td class="px-6 py-4 text-gray-300">${note.title || 'No Title'}</td>
+                                <td class="px-6 py-4 font-semibold">${paper.subject || 'N/A'}</td>
+                                <td class="px-6 py-4 text-gray-300">${paper.examType || 'N/A'}</td>
+                                <td class="px-6 py-4 text-gray-300">${paper.testDate || 'N/A'}</td>
                                 <td class="px-6 py-4 text-right">
-                                    <a href="${note.link || '#'}" download class="bg-[#f17922] text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-[#d96817] transition-colors inline-flex items-center">
+                                    <a href="${paper.link || '#'}" download class="bg-[#f17922] text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-[#d96817] transition-colors inline-flex items-center">
                                         <i class="fas fa-download mr-2"></i>Download
                                     </a>
                                 </td>
@@ -221,7 +220,7 @@
                         <section class="glass-card fade-in-up" style="animation-delay: ${index * 100}ms;">
                             <div class="p-5 md:p-6 border-b border-white/10">
                                 <h2 class="text-2xl font-bold flex items-center">
-                                    <i class="fas fa-folder-open mr-4 text-[#f17922]"></i>${section.topic || 'Untitled Topic'}
+                                    <i class="fas fa-calendar-alt mr-4 text-[#f17922]"></i>${section.term || 'Untitled Term'}
                                 </h2>
                             </div>
                             <div class="overflow-x-auto table-container">
@@ -229,27 +228,27 @@
                                     <thead class="text-xs text-gray-300 uppercase bg-white/5">
                                         <tr>
                                             <th scope="col" class="px-6 py-3">Subject</th>
-                                            <th scope="col" class="px-6 py-3">Week</th>
-                                            <th scope="col" class="px-6 py-3">Title / Description</th>
+                                            <th scope="col" class="px-6 py-3">Exam Type</th>
+                                            <th scope="col" class="px-6 py-3">Test Date</th>
                                             <th scope="col" class="px-6 py-3"><span class="sr-only">Download</span></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        ${tableRows.length > 0 ? tableRows : '<tr><td colspan="4" class="text-center p-4 text-gray-400">No notes in this section yet.</td></tr>'}
+                                        ${tableRows.length > 0 ? tableRows : '<tr><td colspan="4" class="text-center p-4 text-gray-400">No papers in this section yet.</td></tr>'}
                                     </tbody>
                                 </table>
                             </div>
                         </section>
                     `;
-                    notesContainer.innerHTML += sectionHtml;
+                    pyqContainer.innerHTML += sectionHtml;
                 });
 
             } catch (error) {
-                console.error("Error fetching notes:", error);
-                notesContainer.innerHTML = `
+                console.error("Error fetching PYQs:", error);
+                pyqContainer.innerHTML = `
                     <div class="text-center py-10 glass-card">
                        <i class="fas fa-exclamation-triangle text-5xl text-red-500"></i>
-                       <h2 class="mt-4 text-2xl font-bold">Failed to Load Notes</h2>
+                       <h2 class="mt-4 text-2xl font-bold">Failed to Load PYQs</h2>
                        <p class="text-gray-300">There was an error connecting to the database. Please try again later.</p>
                     </div>
                 `;
@@ -279,8 +278,6 @@
             } else {
                 loginButton.classList.remove('hidden');
                 userAvatarArea.classList.add('hidden');
-                // Optional: Redirect to login if not authenticated
-                // window.location.href = 'login.html';
             }
         });
 
@@ -297,9 +294,8 @@
 
         // --- Initial Data Load ---
         document.addEventListener('DOMContentLoaded', () => {
-            fetchAndRenderNotes();
+            fetchAndRenderPYQs();
         });
     </script>
 </body>
 </html>
-

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Control Panel</title>
+    <style>
+        /* General Styling */
+        :root {
+            --primary-color: #0056b3; /* A professional blue */
+            --primary-hover-color: #004494;
+            --background-color: #f4f7fc;
+            --card-background: #ffffff;
+            --text-color: #333;
+            --light-text-color: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Main Container */
+        .admin-container {
+            background-color: var(--card-background);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px var(--shadow-color);
+            padding: 40px;
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .admin-header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .admin-header p {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        /* Button Grid Layout */
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        /* Button Styling */
+        .admin-button {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Align content to the start */
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover-color));
+            color: var(--light-text-color);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: left;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 86, 179, 0.2);
+        }
+
+        .admin-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 86, 179, 0.3);
+        }
+
+        .admin-button .icon {
+            margin-right: 15px;
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .admin-container {
+                padding: 20px;
+            }
+
+            .admin-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .button-grid {
+                grid-template-columns: 1fr; /* Stack buttons on small screens */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>Admin Control Panel</h1>
+            <p>Select a section to manage the website content.</p>
+        </div>
+
+        <div class="button-grid">
+            <a href="admin-dashboard.html" class="admin-button">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                </svg>
+                Dashboard
+            </a>
+
+            <a href="admin-notes.html" class="admin-button">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                </svg>
+                Manage Notes
+            </a>
+
+            <a href="admin-notices.html" class="admin-button">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                </svg>
+                Manage Notices
+            </a>
+
+            <a href="admin-pyqs.html" class="admin-button">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6-2.292m0 0v14.25" />
+                </svg>
+                Manage PYQs
+            </a>
+
+            <a href="admin-schedule.html" class="admin-button">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                </svg>
+                Manage Schedule
+            </a>
+
+            <a href="admin-settings.html" class="admin-button">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-1.007 1.11-.962a8.97 8.97 0 015.71 5.71c.046.55-.421 1.02-1.02 1.11-.09.014-.182.022-.27.022h-1.5a1 1 0 00-1 1v1.5c0 .265.105.52.293.707l1.056 1.056c.195.195.195.512 0 .707l-1.056 1.056a.997.997 0 01-.707.293h-1.5a1 1 0 00-1 1v1.5c0 .55-.47 1.02-.962 1.11a8.97 8.97 0 01-5.71-5.71c-.046-.55.42-1.02.962-1.11.09-.014.182-.022.27-.022h1.5a1 1 0 001-1v-1.5c0-.265-.105-.52-.293-.707l-1.056-1.056a.5.5 0 010-.707l1.056-1.056a.997.997 0 01.707-.293h1.5z" />
+                </svg>
+                Settings
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

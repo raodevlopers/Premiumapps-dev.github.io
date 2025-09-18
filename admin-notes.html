@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Notes - IITM BS HUB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; }
+        .admin-card { background-color: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; }
+        .sidebar { background: linear-gradient(135deg, #003B5C 0%, #005a8b 100%); color: white; width: 280px; }
+        .admin-menu-item { transition: all 0.3s ease; border-left: 4px solid transparent; }
+        .admin-menu-item:hover, .admin-menu-item.active { background-color: rgba(255, 255, 255, 0.1); border-left-color: #f17922; }
+        .btn-primary { background-color: #003B5C; color: white; }
+        .btn-primary:hover { background-color: #002943; }
+        .btn-secondary { background-color: #f17922; color: white; }
+        .btn-secondary:hover { background-color: #d96817; }
+        .btn-danger { background-color: #e53e3e; color: white; }
+        .btn-danger:hover { background-color: #c53030; }
+    </style>
+</head>
+<body class="text-gray-800 flex h-screen">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar flex flex-col flex-shrink-0">
+        <div class="p-6 border-b border-white/10">
+            <h1 class="text-xl font-bold flex items-center">
+                <i class="fas fa-cogs mr-3"></i>Admin Panel
+            </h1>
+            <p class="text-sm text-white/80 mt-1">IITM BS HUB Management</p>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto py-4">
+            <div class="px-4 space-y-2">
+                <a href="admin-dashboard.html" class="admin-menu-item flex items-center px-4 py-3 rounded-lg">
+                    <i class="fas fa-tachometer-alt w-5 mr-3"></i>Dashboard
+                </a>
+                <a href="admin-notes.html" class="admin-menu-item active flex items-center px-4 py-3 rounded-lg">
+                    <i class="fas fa-book-open w-5 mr-3"></i>Notes
+                </a>
+                <a href="admin-pyqs.html" class="admin-menu-item flex items-center px-4 py-3 rounded-lg">
+                    <i class="fas fa-file-alt w-5 mr-3"></i>PYQs
+                </a>
+                <a href="admin-notices.html" class="admin-menu-item flex items-center px-4 py-3 rounded-lg">
+                    <i class="fas fa-bullhorn w-5 mr-3"></i>Notices
+                </a>
+                <a href="admin-schedule.html" class="admin-menu-item flex items-center px-4 py-3 rounded-lg">
+                    <i class="fas fa-calendar-alt w-5 mr-3"></i>Schedule
+                </a>
+                <a href="admin-settings.html" class="admin-menu-item flex items-center px-4 py-3 rounded-lg">
+                    <i class="fas fa-cog w-5 mr-3"></i>Settings
+                </a>
+            </div>
+        </div>
+        
+        <div class="p-4 border-t border-white/10">
+            <a href="index.html" class="flex items-center px-4 py-3 rounded-lg text-white/80 hover:text-white">
+                <i class="fas fa-arrow-left w-5 mr-3"></i>Back to Main Site
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200">
+            <div class="flex justify-between items-center px-6 py-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Manage Notes</h2>
+                    <p class="text-sm text-gray-600">Add and organize study notes</p>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="font-medium" id="admin-user-name">Admin User</p>
+                        <p class="text-sm text-gray-500" id="admin-user-role">Administrator</p>
+                    </div>
+                    <div class="relative" x-data="{ isProfileOpen: false }">
+                        <button @click="isProfileOpen = !isProfileOpen" class="w-10 h-10 rounded-full overflow-hidden bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#f17922]">
+                            <img src="https://placehold.co/100x100/003B5C/FFFFFF?text=A" alt="Admin Avatar" id="admin-avatar">
+                        </button>
+                        <div x-show="isProfileOpen" @click.away="isProfileOpen = false" x-transition class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border">
+                            <a href="#" id="admin-logout" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Sign out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Notes Content -->
+        <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Add/Edit Notes Form -->
+                <div class="lg:col-span-1">
+                    <div class="admin-card p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4" id="form-title">Add New Note</h3>
+                        
+                        <form id="note-form">
+                            <input type="hidden" id="note-id">
+                            
+                            <div class="mb-4">
+                                <label for="note-topic" class="block text-gray-700 text-sm font-medium mb-2">Topic/Category</label>
+                                <input type="text" id="note-topic" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B5C] focus:border-transparent outline-none transition" placeholder="e.g., Mathematics, Programming">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="note-subject" class="block text-gray-700 text-sm font-medium mb-2">Subject</label>
+                                <input type="text" id="note-subject" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B5C] focus:border-transparent outline-none transition" placeholder="e.g., Calculus, Python Basics">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="note-week" class="block text-gray-700 text-sm font-medium mb-2">Week</label>
+                                <input type="text" id="note-week" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B5C] focus:border-transparent outline-none transition" placeholder="e.g., Week 1, Week 2">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="note-title" class="block text-gray-700 text-sm font-medium mb-2">Title</label>
+                                <input type="text" id="note-title" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B5C] focus:border-transparent outline-none transition" placeholder="Note title">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="note-link" class="block text-gray-700 text-sm font-medium mb-2">File Link</label>
+                                <input type="url" id="note-link" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B5C] focus:border-transparent outline-none transition" placeholder="https://drive.google.com/...">
+                            </div>
+                            
+                            <div class="flex space-x-2">
+                                <button type="submit" class="flex-1 btn-primary py-2 rounded-lg font-semibold transition">
+                                    Save Note
+                                </button>
+                                <button type="button" id="cancel-edit" class="hidden btn-danger py-2 px-4 rounded-lg font-semibold transition">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Notes List -->
+                <div class="lg:col-span-2">
+                    <div class="admin-card p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">All Notes</h3>
+                            <div class="text-sm text-gray-500" id="notes-count">0 notes</div>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-gray-50 text-xs text-gray-700 uppercase tracking-wider">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3">Topic</th>
+                                        <th scope="col" class="px-4 py-3">Subject</th>
+                                        <th scope="col" class="px-4 py-3">Week</th>
+                                        <th scope="col" class="px-4 py-3">Title</th>
+                                        <th scope="col" class="px-4 py-3 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="notes-list">
+                                    <tr>
+                                        <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                                            Loading notes...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAC47u3mXuciaavoov2Td2AaI8TiOwV7eY", 
+            authDomain: "iitm-74779.firebaseapp.com", 
+            projectId: "iitm-74779", 
+            storageBucket: "iitm-74779.appspot.com", 
+            messagingSenderId: "49030766593", 
+            appId: "1:49030766593:web:99b7eae829f4af82556000" 
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Check if user is authenticated
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+            
+            document.getElementById('admin-user-name').textContent = user.email;
+            document.getElementById('admin-avatar').src = `https://placehold.co/100x100/003B5C/FFFFFF?text=${user.email.charAt(0).toUpperCase()}`;
+            
+            // Load notes
+            loadNotes();
+            
+            // Check if we're editing a note
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = urlParams.get('edit');
+            if (editId) {
+                loadNoteForEditing(editId);
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('admin-logout').addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => {
+                window.location.href = 'admin-login.html';
+            }).catch(console.error);
+        });
+
+        // Load notes from Firestore
+        function loadNotes() {
+            const notesList = document.getElementById('notes-list');
+            const q = collection(db, "notes_topics");
+            
+            onSnapshot(q, (snapshot) => {
+                if (snapshot.empty) {
+                    notesList.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">No notes found</td></tr>';
+                    document.getElementById('notes-count').textContent = '0 notes';
+                    return;
+                }
+                
+                let html = '';
+                snapshot.forEach(doc => {
+                    const note = doc.data();
+                    html += `
+                        <tr class="bg-white border-b hover:bg-gray-50">
+                            <td class="px-4 py-3 font-medium text-gray-900">${note.topic || 'N/A'}</td>
+                            <td class="px-4 py-3">${note.subject || 'N/A'}</td>
+                            <td class="px-4 py-3">${note.week || 'N/A'}</td>
+                            <td class="px-4 py-3">${note.title || 'No Title'}</td>
+                            <td class="px-4 py-3 text-right">
+                                <button class="text-blue-600 hover:text-blue-800 mr-2 edit-note" data-id="${doc.id}">Edit</button>
+                                <button class="text-red-600 hover:text-red-800 delete-note" data-id="${doc.id}">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                notesList.innerHTML = html;
+                document.getElementById('notes-count').textContent = `${snapshot.size} notes`;
+                
+                // Add event listeners to edit and delete buttons
+                document.querySelectorAll('.edit-note').forEach(button => {
+                    button.addEventListener('click', () => {
+                        loadNoteForEditing(button.getAttribute('data-id'));
+                    });
+                });
+                
+                document.querySelectorAll('.delete-note').forEach(button => {
+                    button.addEventListener('click', () => {
+                        deleteNote(button.getAttribute('data-id'));
+                    });
+                });
+            });
+        }
+
+        // Load a specific note for editing
+        async function loadNoteForEditing(id) {
+            const docRef = doc(db, "notes_topics", id);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                const note = docSnap.data();
+                document.getElementById('note-id').value = id;
+                document.getElementById('note-topic').value = note.topic || '';
+                document.getElementById('note-subject').value = note.subject || '';
+                document.getElementById('note-week').value = note.week || '';
+                document.getElementById('note-title').value = note.title || '';
+                document.getElementById('note-link').value = note.link || '';
+                
+                document.getElementById('form-title').textContent = 'Edit Note';
+                document.getElementById('cancel-edit').classList.remove('hidden');
+                
+                // Scroll to form
+                document.getElementById('note-form').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Delete a note
+        async function deleteNote(id) {
+            if (confirm('Are you sure you want to delete this note?')) {
+                try {
+                    await deleteDoc(doc(db, "notes_topics", id));
+                    alert('Note deleted successfully');
+                } catch (error) {
+                    console.error('Error deleting note: ', error);
+                    alert('Error deleting note: ' + error.message);
+                }
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('note-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('note-id').value;
+            const topic = document.getElementById('note-topic').value;
+            const subject = document.getElementById('note-subject').value;
+            const week = document.getElementById('note-week').value;
+            const title = document.getElementById('note-title').value;
+            const link = document.getElementById('note-link').value;
+            
+            try {
+                if (id) {
+                    // Update existing note
+                    const noteRef = doc(db, "notes_topics", id);
+                    await updateDoc(noteRef, {
+                        topic: topic,
+                        subject: subject,
+                        week: week,
+                        title: title,
+                        link: link
+                    });
+                    alert('Note updated successfully');
+                } else {
+                    // Add new note
+                    await addDoc(collection(db, "notes_topics"), {
+                        topic: topic,
+                        subject: subject,
+                        week: week,
+                        title: title,
+                        link: link,
+                        createdAt: new Date()
+                    });
+                    alert('Note added successfully');
+                }
+                
+                // Reset form
+                document.getElementById('note-form').reset();
+                document.getElementById('note-id').value = '';
+                document.getElementById('form-title').textContent = 'Add New Note';
+                document.getElementById('cancel-edit').classList.add('hidden');
+                
+            } catch (error) {
+                console.error('Error saving note: ', error);
+                alert('Error saving note: ' + error.message);
+            }
+        });
+
+        // Cancel edit
+        document.getElementById('cancel-edit').addEventListener('click', () => {
+            document.getElementById('note-form').reset();
+            document.getElementById('note-id').value = '';
+            document.getElementById('form-title').textContent = 'Add New Note';
+            document.getElementById('cancel-edit').classList.add('hidden');
+            
+            // Remove edit parameter from URL
+            const url = new URL(window.location);
+            url.searchParams.delete('edit');
+            window.history.replaceState({}, '', url);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        body { font-family: 'Poppins', sans-serif; overflow: hidden; }
+        #chat-window { background-color: #e5ddd5; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); }
+        .chat-bubble { max-width: 70%; padding: 8px 12px; border-radius: 8px; position: relative; word-wrap: break-word; box-shadow: 0 1px 1px rgba(0,0,0,0.05); }
+        .user-bubble { background-color: #dcf8c6; color: #303030; border-bottom-right-radius: 0; margin-left: auto; } /* Support reply */
+        .support-bubble { background-color: #ffffff; color: #303030; border-bottom-left-radius: 0; margin-right: auto; } /* User message */
+        #chat-list::-webkit-scrollbar, #chat-window::-webkit-scrollbar, #canned-replies-popup::-webkit-scrollbar { width: 6px; }
+        #chat-list::-webkit-scrollbar-thumb, #chat-window::-webkit-scrollbar-thumb, #canned-replies-popup::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 3px;}
+        .date-divider span { background-color: #e1f2fb; color: #5b5b5b; padding: 4px 12px; border-radius: 8px; font-size: 12px; }
+        @keyframes message-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .message-animate-in { animation: message-in 0.3s ease-out; }
+    </style>
+</head>
+<body class="bg-gray-100 h-screen">
+
+<div class="flex h-full">
+    <!-- Sidebar - Chat List -->
+    <aside class="w-1/3 bg-white border-r flex flex-col">
+        <header class="p-4 border-b bg-gray-50">
+            <h1 class="text-xl font-bold text-gray-800">Support Chats</h1>
+        </header>
+        <div id="chat-list" class="flex-1 overflow-y-auto">
+            <!-- Chat list items will be populated here -->
+             <div id="chat-list-loading" class="p-4 text-center text-gray-500">Loading chats...</div>
+        </div>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <main class="w-2/3 flex flex-col">
+        <div id="no-chat-selected" class="flex flex-col items-center justify-center h-full text-gray-500">
+             <i class="fas fa-comments text-6xl mb-4"></i>
+             <h2 class="text-2xl font-semibold">Select a chat to start replying</h2>
+        </div>
+        
+        <div id="chat-area" class="hidden flex-col h-full">
+             <!-- Header -->
+            <header id="chat-header" class="bg-[#d63341] text-white shadow-md z-10 flex items-center p-3 flex-shrink-0">
+                <img id="header-avatar" src="https://placehold.co/100x100/607d8b/FFFFFF?text=U" alt="User Avatar" class="h-10 w-10 rounded-full mr-3">
+                <div>
+                    <h1 id="header-title" class="text-lg font-bold">User</h1>
+                    <p id="support-status" class="text-xs text-white/80">Support Reply Mode</p>
+                </div>
+            </header>
+
+            <!-- Chat Window -->
+            <div id="chat-window" class="flex-1 overflow-y-auto p-4 space-y-2"></div>
+            
+            <!-- Message Input Form -->
+            <footer class="bg-gray-100 p-3 flex-shrink-0 border-t relative">
+                 <!-- Canned Replies Popup -->
+                <div id="canned-replies-popup" class="hidden absolute bottom-full mb-2 w-full max-w-md bg-white rounded-lg shadow-2xl border max-h-60 overflow-y-auto">
+                    <!-- Replies will be populated here -->
+                </div>
+
+                <form id="chat-form" class="flex items-center space-x-3">
+                    <button type="button" id="canned-replies-btn" class="text-gray-500 hover:text-[#d63341] flex-shrink-0 w-12 h-12 rounded-full hover:bg-gray-200 flex items-center justify-center">
+                         <i class="fas fa-bolt text-xl"></i>
+                    </button>
+                    <input type="text" id="message-input" placeholder="Type your reply..." class="flex-1 p-3 border bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-[#d63341]">
+                    <button type="submit" class="bg-[#d63341] text-white rounded-full w-12 h-12 flex items-center justify-center hover:bg-[#b02734] transition-colors flex-shrink-0">
+                        <i class="fas fa-paper-plane text-xl"></i>
+                    </button>
+                </form>
+            </footer>
+        </div>
+    </main>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, query, orderBy, addDoc, serverTimestamp, limit, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAC47u3mXuciaavoov2Td2AaI8TiOwV7eY",
+        authDomain: "iitm-74779.firebaseapp.com",
+        projectId: "iitm-74779",
+        storageBucket: "iitm-74779.appspot.com",
+        messagingSenderId: "49030766593",
+        appId: "1:49030766593:web:99b7eae829f4af82556000"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const chatList = document.getElementById('chat-list');
+    const chatArea = document.getElementById('chat-area');
+    const noChatSelected = document.getElementById('no-chat-selected');
+    const chatWindow = document.getElementById('chat-window');
+    const chatForm = document.getElementById('chat-form');
+    const messageInput = document.getElementById('message-input');
+    const headerTitle = document.getElementById('header-title');
+    const headerAvatar = document.getElementById('header-avatar');
+    const cannedRepliesBtn = document.getElementById('canned-replies-btn');
+    const cannedRepliesPopup = document.getElementById('canned-replies-popup');
+    
+    let activeChatId = null;
+    let unsubscribe = null;
+
+    // --- Canned Replies ---
+    const cannedReplies = [
+        "Hello! How may I help you today?",
+        "Thanks for reaching out to our support team.",
+        "Could you please provide your registration number or email address?",
+        "Can you please elaborate on the issue you are facing?",
+        "Let me check on that for you. Please give me a moment.",
+        "We are looking into this issue and will get back to you shortly.",
+        "Have you tried clearing your browser's cache and cookies?",
+        "Please try accessing the page in an incognito window.",
+        "The issue seems to be resolved. Can you please confirm?",
+        "Is there anything else I can assist you with?",
+        "We are glad we could help!",
+        "Thanks for your patience.",
+        "Thank you for contacting us. Have a great day!",
+        "Your ticket has been escalated to our technical team.",
+        "Hope your problem gets solved. Feel free to reach out again if you need more help."
+    ];
+
+    function populateCannedReplies() {
+        cannedRepliesPopup.innerHTML = '';
+        cannedReplies.forEach(reply => {
+            const li = document.createElement('div');
+            li.textContent = reply;
+            li.className = 'p-3 hover:bg-gray-100 cursor-pointer text-sm text-gray-700 border-b';
+            li.addEventListener('click', () => {
+                messageInput.value = reply;
+                cannedRepliesPopup.classList.add('hidden');
+                messageInput.focus();
+            });
+            cannedRepliesPopup.appendChild(li);
+        });
+    }
+
+    cannedRepliesBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        cannedRepliesPopup.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!cannedRepliesPopup.contains(e.target) && e.target !== cannedRepliesBtn) {
+            cannedRepliesPopup.classList.add('hidden');
+        }
+    });
+
+
+    async function loadChatList() {
+        const chatsRef = collection(db, 'support_chats');
+        const chatsSnapshot = await getDocs(chatsRef);
+        document.getElementById('chat-list-loading').style.display = 'none';
+
+        for (const chatDoc of chatsSnapshot.docs) {
+            const lastMessageQuery = query(collection(db, `support_chats/${chatDoc.id}/messages`), orderBy('timestamp', 'desc'), limit(1));
+            const firstMessageQuery = query(collection(db, `support_chats/${chatDoc.id}/messages`), orderBy('timestamp', 'asc'), limit(1));
+            
+            const lastMessageSnapshot = await getDocs(lastMessageQuery);
+            const firstMessageSnapshot = await getDocs(firstMessageQuery);
+
+            const lastMessage = lastMessageSnapshot.docs[0]?.data();
+            const firstMessage = firstMessageSnapshot.docs[0]?.data();
+
+            const listItem = document.createElement('div');
+            listItem.className = 'p-4 border-b hover:bg-gray-50 cursor-pointer flex items-center space-x-3';
+            listItem.dataset.chatId = chatDoc.id;
+
+            listItem.innerHTML = `
+                <img src="${firstMessage?.userAvatar || 'https://placehold.co/100x100/607d8b/FFFFFF?text=G'}" class="w-12 h-12 rounded-full flex-shrink-0">
+                <div class="flex-1 overflow-hidden">
+                    <p class="font-bold truncate">${firstMessage?.userName || 'Guest'}</p>
+                    <p class="text-sm text-gray-500 truncate">${lastMessage?.text || 'No messages yet'}</p>
+                </div>
+            `;
+            listItem.addEventListener('click', () => {
+                loadChat(chatDoc.id);
+                 // Highlight active chat
+                document.querySelectorAll('#chat-list > div').forEach(el => el.classList.remove('bg-blue-50'));
+                listItem.classList.add('bg-blue-50');
+            });
+            chatList.appendChild(listItem);
+        }
+    }
+
+    function loadChat(chatId) {
+        if (unsubscribe) unsubscribe(); // Stop listening to the previous chat
+        activeChatId = chatId;
+
+        history.pushState(null, '', `?chatId=${chatId}`);
+        noChatSelected.style.display = 'none';
+        chatArea.style.display = 'flex';
+        chatWindow.innerHTML = '<div class="text-center p-4">Loading messages...</div>';
+
+        const messagesRef = collection(db, `support_chats/${activeChatId}/messages`);
+        const q = query(messagesRef, orderBy("timestamp"));
+
+        unsubscribe = onSnapshot(q, snapshot => {
+            chatWindow.innerHTML = '';
+            let lastDate = null;
+            const firstUserMessage = snapshot.docs.map(d => d.data()).find(d => d.sender === 'user');
+            
+            headerTitle.textContent = firstUserMessage?.userName || 'User';
+            headerAvatar.src = firstUserMessage?.userAvatar || 'https://placehold.co/100x100/607d8b/FFFFFF?text=U';
+            
+            snapshot.docs.forEach(doc => {
+                 const data = doc.data();
+                 const messageDate = data.timestamp ? data.timestamp.toDate() : new Date();
+                 if (!lastDate || messageDate.toDateString() !== messageDate.toDateString()) {
+                     chatWindow.innerHTML += `<div class="text-center my-4"><span class="date-divider">${messageDate.toLocaleDateString()}</span></div>`;
+                     lastDate = messageDate;
+                 }
+                 renderMessage(data);
+            });
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        });
+    }
+
+    function renderMessage(data) {
+        const bubbleClass = data.sender === 'user' ? 'support-bubble' : 'user-bubble';
+        const containerClass = data.sender === 'user' ? 'justify-start' : 'justify-end';
+        const avatarHTML = data.sender === 'user'
+            ? `<img src="${data.userAvatar || 'https://placehold.co/100x100/f17922/FFFFFF?text=G'}" class="w-8 h-8 rounded-full">`
+            : `<img src="https://i.ibb.co/vxp4pdwC/IITM-BS-Hub.png" class="w-8 h-8 rounded-full">`;
+        
+        const messageHTML = `
+            <div class="flex items-end gap-2 ${containerClass} message-animate-in">
+                ${containerClass === 'justify-start' ? avatarHTML : ''}
+                <div class="chat-bubble ${bubbleClass}">
+                    <p>${data.text}</p>
+                    <p class="text-xs text-right mt-1 text-gray-400">${data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : ''}</p>
+                </div>
+                ${containerClass === 'justify-end' ? avatarHTML : ''}
+            </div>
+        `;
+        chatWindow.innerHTML += messageHTML;
+    }
+
+    chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const messageText = messageInput.value.trim();
+        if (!messageText || !activeChatId) return;
+        messageInput.value = '';
+
+        await addDoc(collection(db, `support_chats/${activeChatId}/messages`), {
+            text: messageText,
+            sender: 'support',
+            timestamp: serverTimestamp()
+        });
+    });
+
+    // Initial Load
+    document.addEventListener('DOMContentLoaded', () => {
+        populateCannedReplies();
+        loadChatList();
+        const urlParams = new URLSearchParams(window.location.search);
+        const chatIdFromUrl = urlParams.get('chatId');
+        if (chatIdFromUrl) {
+            loadChat(chatIdFromUrl);
+        }
+    });
+
+</script>
+</body>
+</html>
+

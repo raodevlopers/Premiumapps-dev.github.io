@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IITM BS HUB - Group Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <style>
+        body { font-family: 'Poppins', sans-serif; overflow: hidden; }
+        #chat-window { 
+            background-color: #e5ddd5; 
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            -webkit-user-select: none; /* Safari */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* IE10+/Edge */
+            user-select: none; /* Standard */
+        }
+        .chat-bubble { max-width: 70%; padding: 6px 12px; border-radius: 8px; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+        .user-bubble { background-color: #dcf8c6; margin-left: auto; }
+        .other-bubble { background-color: #ffffff; margin-right: auto; }
+        #chat-window::-webkit-scrollbar { width: 6px; }
+        #chat-window::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 3px;}
+        .admin-tick { color: #1DA1F2; }
+        .message-options { opacity: 0; transition: opacity 0.2s ease-in-out; pointer-events: none; }
+        .group:hover .message-options { opacity: 1; pointer-events: auto; }
+        .reaction { transition: transform 0.1s ease; }
+        .reaction:hover { transform: scale(1.3); }
+        .reaction-pill { background-color: rgba(255, 255, 255, 0.7); backdrop-filter: blur(5px); }
+    </style>
+</head>
+<body class="flex flex-col h-screen bg-gray-200">
+
+<div x-data="{ userProfileModal: false, selectedUser: {}, reactionPicker: { visible: false, messageId: null, top: 0, left: 0 } }" @keydown.escape.window="reactionPicker.visible = false; userProfileModal = false" class="w-full h-full flex flex-col">
+    <!-- Header -->
+    <header class="bg-[#003B5C] text-white shadow-md z-40 flex items-center p-3 flex-shrink-0">
+        <a href="index.html" class="mr-4 text-white hover:bg-white/20 rounded-full p-2"><i class="fas fa-arrow-left"></i></a>
+        <i class="fas fa-users text-2xl mr-3"></i>
+        <div>
+            <h1 class="text-lg font-bold">IITM BS Group</h1>
+            <p class="text-xs text-green-300">Welcome to the community</p>
+        </div>
+    </header>
+
+    <!-- Chat Window -->
+    <main id="chat-window" class="flex-1 overflow-y-auto p-2 sm:p-4">
+        <!-- Messages will be loaded here -->
+    </main>
+    
+    <!-- Message Input Form -->
+    <footer class="bg-gray-100 p-3 flex-shrink-0 border-t">
+        <form id="chat-form" class="flex items-center space-x-3">
+            <button type="button" id="file-upload-btn" class="text-gray-500 hover:text-[#005a8b] w-12 h-12 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-paperclip text-xl"></i>
+            </button>
+            <input type="file" id="file-input" class="hidden" accept="image/*,application/pdf">
+            <input type="text" id="message-input" placeholder="Type a message..." class="flex-1 p-3 border bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-[#f17922]" autocomplete="off">
+            <button type="submit" id="send-btn" class="bg-[#005a8b] text-white rounded-full w-12 h-12 flex items-center justify-center hover:bg-[#003B5C] transition-colors flex-shrink-0">
+                <i id="send-icon" class="fas fa-paper-plane text-xl"></i>
+                 <div id="send-spinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            </button>
+        </form>
+    </footer>
+
+    <!-- Modals and Popovers -->
+    <div id="login-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg text-center shadow-xl">
+            <h2 class="text-2xl font-bold mb-4">Login Required</h2>
+            <p class="mb-6">You need to be logged in to join the chat.</p>
+            <a href="login.html" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">Go to Login</a>
+        </div>
+    </div>
+
+    <div x-show="userProfileModal" @click.away="userProfileModal = false" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-80">
+            <div class="flex flex-col items-center">
+                <img :src="selectedUser.avatar" class="w-24 h-24 rounded-full mb-4 border-4" :class="selectedUser.isAdmin ? 'border-blue-500' : 'border-gray-300'">
+                <div class="flex items-center">
+                    <h2 class="text-2xl font-bold" x-text="selectedUser.name"></h2>
+                    <i x-show="selectedUser.isAdmin" class="fas fa-check-circle admin-tick ml-2" title="Admin"></i>
+                </div>
+                <p class="text-gray-500" x-text="selectedUser.email"></p>
+            </div>
+            <div id="admin-controls" class="hidden mt-4 pt-4 border-t space-y-2">
+                <h3 class="text-xs uppercase font-bold text-gray-500">Admin Actions</h3>
+                <button class="w-full text-left p-2 rounded hover:bg-red-100 text-red-600"><i class="fas fa-ban mr-2"></i>Ban User</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reaction Picker -->
+    <div x-show="reactionPicker.visible" x-cloak @click.away="reactionPicker.visible = false"
+         :style="`top: ${reactionPicker.top}px; left: ${reactionPicker.left}px`"
+         class="fixed bg-white rounded-full shadow-lg p-1 flex space-x-2 z-50">
+        <span @click="reactToMessage(reactionPicker.messageId, '👍'); reactionPicker.visible = false" class="reaction text-2xl cursor-pointer">👍</span>
+        <span @click="reactToMessage(reactionPicker.messageId, '❤️'); reactionPicker.visible = false" class="reaction text-2xl cursor-pointer">❤️</span>
+        <span @click="reactToMessage(reactionPicker.messageId, '😂'); reactionPicker.visible = false" class="reaction text-2xl cursor-pointer">😂</span>
+        <span @click="reactToMessage(reactionPicker.messageId, '😮'); reactionPicker.visible = false" class="reaction text-2xl cursor-pointer">😮</span>
+        <span @click="reactToMessage(reactionPicker.messageId, '😢'); reactionPicker.visible = false" class="reaction text-2xl cursor-pointer">😢</span>
+        <span @click="reactToMessage(reactionPicker.messageId, '🙏'); reactionPicker.visible = false" class="reaction text-2xl cursor-pointer">🙏</span>
+    </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+    import { getFirestore, doc, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyAC47u3mXuciaavoov2Td2AaI8TiOwV7eY", authDomain: "iitm-74779.firebaseapp.com", projectId: "iitm-74779", storageBucket: "iitm-74779.appspot.com", messagingSenderId: "49030766593", appId: "1:49030766593:web:99b7eae829f4af82556000" };
+    const IMGBB_API_KEY = "c89b96a3ed515320250d4041d1130e62";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const loginModal = document.getElementById('login-modal');
+    const chatWindow = document.getElementById('chat-window');
+    const chatForm = document.getElementById('chat-form');
+    const messageInput = document.getElementById('message-input');
+    const adminControls = document.getElementById('admin-controls');
+    const fileUploadBtn = document.getElementById('file-upload-btn');
+    const fileInput = document.getElementById('file-input');
+    const sendBtn = document.getElementById('send-btn');
+    const sendIcon = document.getElementById('send-icon');
+    const sendSpinner = document.getElementById('send-spinner');
+
+    let currentUser = null;
+
+    function renderMessage(doc) {
+        const data = doc.data();
+        const isCurrentUser = data.uid === currentUser.uid;
+        const isAdmin = data.email === "raojatin@gmail.com";
+        const avatar = isAdmin ? 'https://i.ibb.co/pBHKw6nn/Picsart-25-04-17-15-09-20-787-1.jpg' : data.userAvatar;
+
+        let messageContentHTML = '';
+        if (data.type === 'image') {
+            messageContentHTML = `
+                <a href="${data.fileUrl}" target="_blank" class="block mt-1 max-w-xs rounded-lg overflow-hidden" style="max-height: 400px;">
+                    <img src="${data.fileUrl}" class="w-full h-full object-cover" alt="Shared image">
+                </a>`;
+        } 
+        else if (data.type === 'pdf') { messageContentHTML = `<a href="${data.fileUrl}" target="_blank" class="flex items-center bg-gray-200/50 p-2 rounded-lg hover:bg-gray-300/50 mt-1"><i class="fas fa-file-pdf text-red-500 text-3xl mr-3"></i><p class="font-semibold text-sm break-all">${data.fileName}</p></a>`; }
+        else { messageContentHTML = `<p class="break-words">${data.text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>`; }
+        
+        const reactionsHTML = data.reactions ? Object.entries(data.reactions).map(([emoji, uids]) => uids.length > 0 ? `<div class="reaction-pill px-2 py-0.5 rounded-full text-sm flex items-center gap-1">${emoji}<span>${uids.length}</span></div>` : '').join('') : '';
+        
+        const nameLineHTML = `
+            <div class="flex items-center gap-1.5 mb-1">
+                <p class="text-xs font-bold ${isAdmin ? 'text-blue-600' : 'text-purple-600'}">${data.userName}</p>
+                ${isAdmin ? '<i class="fas fa-check-circle admin-tick text-xs" title="Admin"></i>' : ''}
+            </div>`;
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `flex items-start gap-2 my-2 ${isCurrentUser ? 'justify-end' : 'justify-start'}`;
+        
+        messageDiv.innerHTML = `
+            ${!isCurrentUser ? `<img src="${avatar}" class="w-10 h-10 rounded-full cursor-pointer flex-shrink-0" data-uid="${data.uid}" data-name="${data.userName}" data-email="${data.email}" data-avatar="${avatar}" data-is-admin="${isAdmin}">` : ''}
+            <div class="flex flex-col ${isCurrentUser ? 'items-end' : 'items-start'}">
+                <div class="group relative">
+                    <div class="${isCurrentUser ? 'user-bubble' : 'other-bubble'} chat-bubble">
+                        ${!isCurrentUser ? nameLineHTML : ''}
+                        ${messageContentHTML}
+                    </div>
+                    <!-- Reactions -->
+                    ${reactionsHTML ? `<div class="flex gap-1 mt-1 ${isCurrentUser ? 'justify-end' : 'justify-start'}">${reactionsHTML}</div>` : ''}
+                    <!-- Message Options -->
+                    <div class="message-options absolute top-0 ${isCurrentUser ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} h-full flex items-center px-2">
+                         <div class="bg-white rounded-full shadow-md flex">
+                            <button class="p-2 text-gray-600 hover:text-blue-500" data-action="react" data-id="${doc.id}"><i class="fas fa-smile"></i></button>
+                            ${isCurrentUser ? `<button class="p-2 text-gray-600 hover:text-red-500" data-action="delete" data-id="${doc.id}"><i class="fas fa-trash"></i></button>` : ''}
+                         </div>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 px-2 mt-1">${data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : ''}</p>
+            </div>
+            ${isCurrentUser ? `<img src="${avatar}" class="w-10 h-10 rounded-full cursor-pointer flex-shrink-0" data-uid="${data.uid}" data-name="${data.userName}" data-email="${data.email}" data-avatar="${avatar}" data-is-admin="${isAdmin}">` : ''}
+        `;
+
+        chatWindow.appendChild(messageDiv);
+    }
+
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            loginModal.classList.add('hidden');
+            const isAdmin = user.email === "raojatin@gmail.com";
+            const name = user.email.split('@')[0].charAt(0).toUpperCase() + user.email.split('@')[0].slice(1);
+            const initial = name.charAt(0).toUpperCase();
+            
+            currentUser = { uid: user.uid, email: user.email, name: name, avatar: isAdmin ? 'https://i.ibb.co/pBHKw6nn/Picsart-25-04-17-15-09-20-787-1.jpg' : `https://placehold.co/100x100/f17922/FFFFFF?text=${initial}`, isAdmin: isAdmin };
+
+            onSnapshot(query(collection(db, "group_chat"), orderBy("timestamp")), (snapshot) => {
+                const scrollTop = chatWindow.scrollTop;
+                const scrollHeight = chatWindow.scrollHeight;
+                const clientHeight = chatWindow.clientHeight;
+                const isScrolledToBottom = scrollHeight - scrollTop === clientHeight;
+
+                chatWindow.innerHTML = '';
+                snapshot.forEach(renderMessage);
+
+                if(isScrolledToBottom) {
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                }
+            });
+        } else { loginModal.classList.remove('hidden'); }
+    });
+
+    chatForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        const text = messageInput.value.trim();
+        if (text && currentUser) {
+            messageInput.value = '';
+            await addDoc(collection(db, "group_chat"), { text: text, type: 'text', uid: currentUser.uid, email: currentUser.email, userName: currentUser.name, userAvatar: currentUser.avatar, timestamp: serverTimestamp(), reactions: {} });
+        }
+    });
+    
+    fileUploadBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', async e => {
+        const file = e.target.files[0]; if (!file) return;
+        toggleLoading(true);
+        const formData = new FormData(); formData.append('image', file);
+        try {
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
+            const result = await res.json();
+            if (result.success) {
+                const fileType = file.type.startsWith('image/') ? 'image' : 'pdf';
+                await addDoc(collection(db, "group_chat"), { type: fileType, fileUrl: result.data.url, fileName: file.name, uid: currentUser.uid, email: currentUser.email, userName: currentUser.name, userAvatar: currentUser.avatar, timestamp: serverTimestamp(), reactions: {} });
+            } else { alert('File upload failed: ' + result.error.message); }
+        } catch (error) { console.error('Upload Error:', error); alert('An error occurred during upload.'); }
+        finally { toggleLoading(false); fileInput.value = ''; }
+    });
+    
+    function toggleLoading(isLoading) {
+        sendIcon.classList.toggle('hidden', isLoading);
+        sendSpinner.classList.toggle('hidden', !isLoading);
+        sendBtn.disabled = isLoading;
+        fileUploadBtn.disabled = isLoading;
+    }
+    
+    // --- Actions (Delete, React, Profile) ---
+    window.reactToMessage = async (messageId, emoji) => {
+        if (!currentUser) return;
+        const messageRef = doc(db, 'group_chat', messageId);
+        const messageSnap = await getDoc(messageRef);
+        if (!messageSnap.exists()) return;
+
+        const data = messageSnap.data();
+        const reactions = data.reactions || {};
+        
+        // Remove user from any other reaction
+        for(const key in reactions) {
+            if(key !== emoji) {
+                reactions[key] = reactions[key]?.filter(uid => uid !== currentUser.uid);
+            }
+        }
+        
+        // Add or remove from current reaction
+        if (reactions[emoji] && reactions[emoji].includes(currentUser.uid)) {
+            reactions[emoji] = reactions[emoji].filter(uid => uid !== currentUser.uid);
+        } else {
+            if (!reactions[emoji]) reactions[emoji] = [];
+            reactions[emoji].push(currentUser.uid);
+        }
+        await updateDoc(messageRef, { reactions });
+    };
+
+    chatWindow.addEventListener('click', async (e) => {
+        const target = e.target.closest('button[data-action]');
+        if (!target) return;
+        
+        const action = target.dataset.action;
+        const messageId = target.dataset.id;
+        const alpineComponent = target.closest('[x-data]').__x;
+
+        if (action === 'delete') {
+            const messageRef = doc(db, 'group_chat', messageId);
+            const messageSnap = await getDoc(messageRef);
+            if(messageSnap.exists() && messageSnap.data().uid === currentUser.uid) {
+                if (confirm('Are you sure you want to unsend this message?')) {
+                    try {
+                        await deleteDoc(messageRef);
+                    } catch (error) {
+                        console.error("Error deleting message:", error);
+                        alert("Could not delete message.");
+                    }
+                }
+            }
+        }
+        if (action === 'react') {
+            const rect = target.getBoundingClientRect();
+            alpineComponent.reactionPicker = {
+                visible: true,
+                messageId: messageId,
+                top: rect.top - 50,
+                left: rect.left - (rect.width / 2) - 80
+            };
+        }
+    });
+
+    document.addEventListener('click', e => {
+        if(e.target.matches('[data-uid]')) {
+            const el = e.target;
+            const alpineComponent = e.target.closest('[x-data]').__x;
+            alpineComponent.selectedUser = { uid: el.dataset.uid, name: el.dataset.name, email: el.dataset.email, avatar: el.dataset.avatar, isAdmin: el.dataset.isAdmin === 'true' };
+            adminControls.style.display = currentUser.isAdmin ? 'block' : 'none';
+            alpineComponent.userProfileModal = true;
+        }
+    });
+</script>
+</body>
+</html>
+
